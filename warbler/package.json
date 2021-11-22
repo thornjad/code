@@ -1,0 +1,34 @@
+{
+  "name": "warbler",
+  "version": "0.0.1",
+  "description": "A Lisp-like experimental pet language that scompiles to Javascript",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/thornjad/warbler.git"
+  },
+  "directories": {
+    "doc": "doc"
+  },
+  "bin": {
+    "warbler": "./bin/warbler"
+  },
+  "scripts": {
+    "test": "snyk test"
+  },
+  "keywords": [],
+  "author": "Jade Michael Thornton (@thornjad)",
+  "license": "ISC",
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "dependencies": {
+    "hot-cocoa": "0.0.5",
+    "lodash": "^4.17.11",
+    "minimist": "^1.2.0",
+    "uglify-js": "^3.4.9"
+  },
+  "devDependencies": {
+    "snyk": "^1.130.0"
+  }
+}

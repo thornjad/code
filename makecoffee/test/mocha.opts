@@ -1,0 +1,4 @@
+-R progress
+--require coffeescript/register --extension coffee
+--require mocha-clean/brief
+--watch-extensions txt

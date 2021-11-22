@@ -1,0 +1,18 @@
+(def divisible (# (n m) (= 0 (mod n m))))
+
+(def evaluated-if
+     (# (condition yes no)
+        (if (condition yes no) yes no)))
+
+(def fizzbuzz
+     (# (n)
+        (console.log
+         (evaluated-if (# (_ words) (empty? words)) n
+                       (reduce (map [[3 "Fizz"] [5 "Buzz"]]
+                                        (# (pair)
+                                           (if (divisible n (get pair 0))
+                                               (get pair 1) "")))
+                                 (# (a b) (cat a b)) "")))
+        (and (< n 100) (fizzbuzz (+1 n)))))
+
+(fizzbuzz 1)

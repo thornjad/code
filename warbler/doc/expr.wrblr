@@ -1,0 +1,32 @@
+;;;; Experimentations with alternative syntax
+
+(defun fact (n)
+	(if (< n 2)
+			1
+			(* n (fact (- n 1)))))
+(fact 5)
+
+;;; parens optional when obvious? Sorta like coffeescript
+
+defun fact (n)
+	if (< n 2)
+		 1
+		 * n (fact (- n 1))
+fact 5
+
+;;; ^^ For right now, Im rejecting this due to clarity of intention. First, and
+;;; most simply, the full-paren version is more clear that this is an expression
+;;; which always evaluates to something. Also, the paren version is simpler to
+;;; parse, as well as develop tools for (syntax highlighting, indentation rules).
+
+;;; An alternative could be to make the top-level parens (and only top level)
+;;; optional:
+
+defun fact (n)
+	(if (< n 2)
+			1
+			(* n (fact (- n 1))))
+fact 5
+
+;;; However, this may feel a bit too much like mixing styles, and looks more
+;;; confusing than helpful.

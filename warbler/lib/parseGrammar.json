@@ -1,0 +1,60 @@
+{
+  "_program": [
+    ["_expression", "_program-tail"]
+  ],
+  "_program-tail": [
+    ["_program"],
+    []
+  ],
+  "_expression": [
+    ["_dotted-chain"],
+    ["_list"],
+    ["_dotted-list"],
+    ["_literal-list"],
+    ["_object"],
+    ["_atom"]
+  ],
+  "_list": [
+    ["(", "_list-tail"]
+  ],
+  "_dotted-list": [
+    ["(", ".", "_list-tail"]
+  ],
+  "_list-tail": [
+    ["_expression", "_list-tail"],
+    [")"]
+  ],
+  "_dotted-chain": [
+    ["_obj-reference", ".", "identifier", "_dotted-chain-tail"]
+  ],
+  "_obj-reference": [
+    ["_list"],
+    ["_literal-list"],
+    ["_object"],
+    ["identifier"]
+  ],
+  "_dotted-chain-tail": [
+    [".", "identifier", "_dotted-chain-tail"],
+    []
+  ],
+  "_literal-list": [
+    ["[", "_literal-list-tail"]
+  ],
+  "_literal-list-tail": [
+    ["_expression", "_literal-list-tail"],
+    ["]"]
+  ],
+  "_object": [
+    ["{", "_object-tail"]
+  ],
+  "_object-tail": [
+    ["_atom", "_expression", "_object-tail"],
+    ["}"]
+  ],
+  "_atom": [
+    ["identifier"],
+    ["string"],
+    ["number"],
+    ["boolean"]
+  ]
+}

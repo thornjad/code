@@ -1,0 +1,27 @@
+(def dihedral-subtract
+     (# (a b order)
+        (let (u_1 (>> a 1)
+              v_1 (& a 1)
+              u_2 (>> b 1)
+              v_2 (& b 1))
+          (if (= 1 v_1)
+              (bit-or (<< (% (+ order u_1 (- u_2)) (>> order 1)) 1)
+                      (if (zero? v_2) 1 0))
+            (bit-or (<< (% (+ u_1 u_2) (>> order 1)) 1)
+                      v_2)))))
+
+(def get-order (let (n (integer (nth process.argv 2)))
+                (cond
+                 ((or (not (integer? n)) (< n 1)) 6)
+                 ((odd? n) (--1 n))
+                 (true n))))
+
+(process.stdout.write "   ")
+(times (i get-order)
+       (process.stdout.write (cat i " ")))
+(process.stdout.write "\n")
+(times (i get-order)
+       (process.stdout.write (cat i "  "))
+       (times (j get-order)
+              (process.stdout.write (cat (dihedral-subtract i j get-order) " ")))
+       (process.stdout.write "\n"))

@@ -1,0 +1,49 @@
+{
+  "name": "makecoffee",
+  "version": "0.9.0",
+  "description": "JavaScript to CoffeeScript compiler",
+  "main": "dist/makecoffee.js",
+  "keywords": [
+    "javascript",
+    "coffeescript",
+    "language",
+    "compiler"
+  ],
+  "scripts": {
+    "test": "snyk test && mocha",
+    "autotest": "mocha -R min -b --watch"
+  },
+  "author": "Jade Michael Thornton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/thornjad/makecoffee/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/thornjad/makecoffee.git"
+  },
+  "bin": {
+    "makecoffee": "./bin/makecoffee"
+  },
+  "dependencies": {
+    "escodegen": "^1.6.0",
+    "esprima": "^2.7.3",
+    "estraverse": "^4.1.1",
+    "minimist": "^1.1.0",
+    "read-input": "^0.3.1",
+    "source-map": "^0.7.3"
+  },
+  "devDependencies": {
+    "browserify": "16.2.3",
+    "chai": "^4.2.0",
+    "coffeeify": "^3.0.1",
+    "coffeelint": "^2.1.0",
+    "coffeescript": "^2.3.2",
+    "glob": "^7.0.0",
+    "js-yaml": "^3.12.2",
+    "mocha": "^6.0.2",
+    "mocha-clean": "^1.0.0",
+    "snyk": "^1.134.2",
+    "uglify-es": "^3.3.9"
+  }
+}

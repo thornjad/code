@@ -1,0 +1,30 @@
+{
+  "name": "moapi",
+  "version": "0.1.0",
+  "description": "A WebSocket interface for the Mopidy server",
+  "main": "src/moapi.js",
+  "repository": "https://github.com/raindeer44/moapi",
+  "author": "Jade Thornton <jade@jmthornton.net>",
+  "license": "ISC",
+  "scripts": {
+    "build": "babel src/ -d lib/",
+    "prepublish": "yarn run build",
+    "flow": "flow"
+  },
+  "keywords": [
+    "mopidy",
+    "music",
+    "client",
+    "websocket",
+    "json-rpc"
+  ],
+  "bugs": "https://github.com/raindeer44/moapi/issues",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-flow": "^6.23.0",
+    "flow-bin": "^0.59.0"
+  },
+  "dependencies": {
+    "faye-websocket": "^0.11.1"
+  }
+}

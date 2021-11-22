@@ -1,0 +1,306 @@
+;;;-----------------------------------------------------------------------------
+;;; 0. Syntax
+;;;-----------------------------------------------------------------------------
+
+;;; Forms
+
+;;; A program in Warbler is one or more forms. A form is a list which evaluates
+;;; to some value without error. Lists and the s-expressions which make them
+;;; up are covered later.
+
+10              ; an atomic or normal form, which evaluates to itself
+(+ 1 2 3)       ; a compound form, which evaluates to the normal form 6
+'(4 "foo" true) ; a quoted form, which can be used as a literal list
+
+;;; Forms can (and usually are) composed of other forms.
+
+(* (+ 1 2) 10) ; -> 30
+
+;;; Comments
+
+;;; All text following a semi-colon, up to the end of the line, is a comment. By
+;;; convention, as in Lisp, use four semi-colons for file-level comments, three
+;;; for section descriptions, two inside function definitions, and one for
+;;; single-line comments. Comments are not forms and are removed by the
+;;; preprocessor.
+
+;;; There are also C-style block comments, allowing free form text. These
+;;; comments begin with /* and end with */
+
+/* This is an example
+   of a free-form block comment
+*/
+
+;;;-----------------------------------------------------------------------------
+;;; Identifiers, data types and operators
+;;;-----------------------------------------------------------------------------
+
+;;; Identifiers are names used to identify bindings (including function
+;;; bindings). They may include alphanumeric characters as well as the following:
+;;; _, !, ?, $, %, &, @, #, |, ~, *, +, -, =, /, <, >, ^
+;;; However, identifiers may not begin with a number, nor a hyphen (-). Some of
+;;; these characters are not legal in Javascript, and so they are replaced in a
+;;; predictable way when transcompiled.
+
+;;; Number literals follow the JSON specification for numbers. The following are
+;;; all valid numbers
+
+1234567890   ; integers
+3.14159265   ; decimals
+1/2          ; the fraction one-half
+Infinity     ; positive infinity
+-Infinity    ; negative infinity
+
+;;; Strings
+
+"foo"                    ; a basic string atom
+"foo ${bar}"             ; use ${} for interpolation
+(concat "hello" "world") ; strings can be concatenated
+
+;;; Booleans
+
+true         ; -> true
+false        ; -> false
+
+;;; Forms are truthy if they contain inherent information. Falsy forms contain
+;;; only the information that they are falsy.
+
+"false"      ; -> true, because it contains information
+1            ; -> true
+0            ; -> false
+""           ; -> false
+()           ; -> false, this is the empty list
+void         ; -> false, void is shorthand for the empty list ()
+NaN          ; -> false, Not a Number, result of invalid arithmetic
+
+;;; Boolean forms
+
+(not false)  ; -> true
+(and 0 true) ; -> false, because 0 is falsy
+(or 1 false) ; -> true, because 1 is truthy
+
+;;; Basic aritmetic operations
+
+(+ 1 2)     ; -> 3
+(- 8 1)     ; -> 7
+(* 10 5)    ; -> 50
+(/ 50 2)    ; -> 25
+(// 13 5)   ; -> 2
+(% 13 5)    ; -> 3
+(** 2 3)    ; -> 8
+
+
+;;;-----------------------------------------------------------------------------
+;;; Bindings, refs, structs, cells, lists
+;;;-----------------------------------------------------------------------------
+
+;;; Create scope-level bindings with def, which returns the bound value.
+;;; Bindings are immutable.
+
+(def foo 7) ; -> 7
+
+;;; To create multiple bindings at once:
+
+(def (bar 10) (baz "zap"))
+
+;;; 'with' creates secret bindings (local scope), much like in Lisp, or like
+;;; 'with' in Ocaml. The bindings are only available within the with form.
+
+(with ((foo 8) (bar 10))
+			;; Do things with foo and bar
+			(- bar foo)
+  )
+
+;;; While bindings are immutable, there are plenty of cases in which mutability
+;;; is the way to go. A special form is provided to account for this case. Ref
+;;; creates a data structure called a Ref (big R) which may contain a mutable
+;;; value. Despite the name, this is not as complex as Clojure's Ref, more like
+;;; Clojure's Var. The ref function returns a Ref, not the value it contains,
+;;; but of course the Ref can be bound itself.
+
+(def birdie (ref "crane")) ; -> Refx0
+
+;;; To access the contents of a Ref (as in Clojure), use deref
+(deref birdie) ; -> "crane"
+
+;;; To change the value contained within the Ref, use refset
+(refset birdie "magpie") ; -> Refx0
+(deref birdie)           ; -> "magpie"
+
+;;; Structs are hash map objects. Structs are very similar to JSON (with some
+;;; less strict rules) and can be treated as such.
+(def zee (struct
+					'name "zee"
+					'breed "labrador retriever"
+					'age 12))
+zee         ; -> {"name": "zee", "breed": "labrador retriever", "age": 12}
+(zee::name) ; -> "zee"
+
+;;; Cells (aka cons cells) are pairs of data which can be nested. These are
+;;; useful for creating trees and lists
+
+(cons foo bar) ; -> (foo . bar)
+
+;;; Access the parts of a cell with car and cdr, as in other lisps
+
+(def x (cons foo bar)) ; -> (foo . bar)
+(car x)                ; -> foo
+(cdr x)                ; -> bar
+
+;;; Lists are linked-list data structures made of cells, ending with void to
+;;; mark the end of the list.
+
+(cons 1 (cons 2 (cons 3 void))) ; -> '(1 2 3)
+
+;;; 'list' is a constructor for lists, so it doesn't need all those 'cons's. A
+;;; list is not evaluated
+
+(list + 1 2)    ; -> (+ 1 2), not evaluated
+'(1 2 3)        ; -> (+ 1 2), ' is shorthand for list
+
+;;; When the first argument to 'cons' is an atomic form and the second is a
+;;; list, it returns a list with the first argument prepended to the second
+;;; argument
+
+(cons 4 '(1 2 3)) ; -> '(4 1 2 3)
+
+;;; 'append' can be used to join lists
+
+(append '(1 2) '(3 4)) ; -> '(1 2 3 4)
+
+;;; The standard prelude provides more readable ways of accessing parts of lists
+
+(first '(1 2 3)) ; -> 1
+(second '(1 2 3)) ; -> 2
+;; The standard prelude provides 'first' through 'tenth'
+(rest '(1 2 3)) ; -> '(2 3)
+
+;;; The standard prelude allows lists to be indexed like arrays with 'lindex'
+;;; (for 'list index'), as in Tcl
+
+(lindex '(1 2 3 4) 2) ; -> 3
+
+
+;;;-----------------------------------------------------------------------------
+;;; Functions
+;;;-----------------------------------------------------------------------------
+
+;;; Function literals (aka lambdas) can be defined using lambda, or, for funzies,
+;;; with λ.
+(lambda (foo) "Hello Warbler") ; -> Funcx0, but cannot be called
+(λ () "Hello there")           ; -> Funcx1, but cannot be called
+
+;;; Function literals can be called immediately with call, or when it is the car
+;;; of a form
+(call (lambda () "Heyo!"))                ; -> "Heyo!"
+(call (lambda (bar) "Hi ${bar}") "birdo") ; -> "Hi birdo"
+
+;;; Functions may be bound
+(def boundedfun
+		 (λ ()
+				"Wow I am so bound"))
+
+;;; The standard prelude provides a shorthand for this
+(defun boundedfun void
+	"I am just as bounded")
+
+;;; Defun optionally takes a docstring. If a function contains only one string, it
+;;; is both the docstring and the function's return value. The docstring does not
+;;; undergo interpolation, so interpolated text will be literal
+(defun funWithDocs ()
+	"Returns a fun fact" ; this is the docstring
+	"JK its not that fun")
+
+(defun funWithInterpolation (foo)
+	"I was given ${foo}")      ; -> docstring is literally "I was given ${foo}"
+(funWithInterpolation "bar") ; -> "I was given bar"
+
+
+;;;-----------------------------------------------------------------------------
+;;; Loops
+;;;-----------------------------------------------------------------------------
+
+;;; Recursion
+
+(defun fact (n)
+	(if (< n 2)
+			1
+		(* n (fact (- n 1)))))
+(fact 5) ; -> 120
+
+;;; Iteration
+
+;;; There are three looping constructs, as in Hot Cocoa Lisp. There is 'while',
+;;; 'times' and 'for'
+
+;;; 'while' executes its second argument as long as its first argument evaluates
+;;; to a truthy value
+
+
+
+;;; 'times' is a standard loop which counts from 0 to n, providing a Ref with
+;;; the current iteration number (starting from 0)
+
+(times (x 10)
+			 (puts "this is iteration ${(deref x)}"))
+
+;;; 'for' allows iteration over the elements of a list, cell or struct, as in
+;;; Coffeescript or Python, not as in C or JavaScript
+(for (x '(1 2 3))
+		 (log x))
+
+
+;;;-----------------------------------------------------------------------------
+;;; Object accessor
+;;;-----------------------------------------------------------------------------
+
+;;; The object accessor is conceptually influenced by the scope operator of C++
+;;; and Tcl, but is closer to the dot operator of JavaScript. As the name
+;;; implies, it is used to access object members. The object may be a function,
+;;; a struct, a namespace, or another object. Object accessors have a built-in
+;;; convenience syntax.
+
+(:: foo bar (:: sparrow child)) ; Same as:
+(foo::bar (sparrow::child))
+
+
+;;;-----------------------------------------------------------------------------
+;;; Macros
+;;;-----------------------------------------------------------------------------
+
+;;; Macros are one of the greatest strengths of the Lisp family of languages.
+;;; Macros are functions which run at compile-time, rather than at run-time. The
+;;; power of macros comes from the fact that, since code is made entirely of s-
+;;; expressions, it is literally data, data which can be manipulated. An
+;;; in-depth tutorial on macros can be found in the doc/ directory.
+
+
+;;;-----------------------------------------------------------------------------
+;;; Continuations
+;;;-----------------------------------------------------------------------------
+
+;;; Continuations are a method of asynchronous programming in which a function
+;;; pauses and yields a value to its caller. The function can then be resumed in
+;;; the future.
+
+
+;;;-----------------------------------------------------------------------------
+;;; Async functions
+;;;-----------------------------------------------------------------------------
+
+;;; Any function can be made asynchronous by using the await form within it. As
+;;; in JavaScript, await takes in a promise and returns its value, providing a
+;;; sort of pseudo-synchronous asynchronous style of programming.
+
+
+;;;-----------------------------------------------------------------------------
+;;; The standard prelude
+;;;-----------------------------------------------------------------------------
+
+;;; The standard prelude provides a set of helper forms and syntactic sugar. A
+;;; full tutorial can be found in the doc/ directory
+
+
+;;;-----------------------------------------------------------------------------
+;;; Macros
+;;;-----------------------------------------------------------------------------

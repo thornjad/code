@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "boids"
+version = "0.1.0"
+description = "A simple 2D Boids simulation"
+authors = ["Jade Michael Thornton <jademichael@jmthornton.net>"]
+license = "ISC"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pygame = "^2.0.1"
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.910"
+black = "^21.8b0"
+pytest = "^6.2.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

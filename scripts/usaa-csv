@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+
+# Processes a USAA-formatted CSV transaction list for consumption by YNAB
+
+if ! (( $+commands[sponge] )); then
+	if read -q "choice?Sponge required, would you like to install now? [y/N] "; then
+		sudo apt update && sudo apt install moreutils
+	else
+		echo "Exiting..."
+		exit 0
+	fi
+fi
+
+<<< "a,b,Date,c,Payee,d,Amount" < "$1" | sponge "$1"
+
+echo "Done"

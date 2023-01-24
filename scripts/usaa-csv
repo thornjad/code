@@ -11,6 +11,8 @@ if ! (( $+commands[sponge] )); then
 	fi
 fi
 
-<<< "a,b,Date,c,Payee,d,Amount" < "$1" | sponge "$1"
+file="/home/jmt/Downloads/bk_download.csv"
+
+<<< 'a,b,Date,c,Payee,d,Amount' < "$file" | sponge "$file"
 
 echo "Done"

@@ -1,6 +1,6 @@
 (ns chess.core)
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(defn exit
+  "Exit the engine."
+  []
+  (System/exit 0))

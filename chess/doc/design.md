@@ -16,6 +16,10 @@
 - Alphabeta algorithm
 -
 
+## Version 0.8
+
+- magic bitboard?
+
 ## Version 0.9
 
 - Memory limits

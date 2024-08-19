@@ -3,6 +3,7 @@ import os
 import asyncio
 from aiohttp import ClientSession
 from dotenv import load_dotenv
+from typing import Union
 
 model = "gpt-3.5-turbo"
 
@@ -59,7 +60,7 @@ def process_commands(user_input) -> Union[bool, str]:
             # It's a normal message
             return True
 
-        return False
+    return False
 
 
 async def get_ai_response() -> bool:
